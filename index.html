@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Valentine 💖</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#ffe6f0,#fff0f6);
+  font-family:'Nunito',system-ui,-apple-system;
+  overflow:hidden;
+}
+
+.card{
+  background:white;
+  padding:24px;
+  border-radius:26px;
+  width:90%;
+  max-width:420px;
+  text-align:center;
+  box-shadow:0 25px 45px rgba(0,0,0,.2);
+}
+
+h1{color:#ff4d88;font-weight:900;}
+
+#gif{width:180px;margin:10px auto;}
+
+.buttons{position:relative;height:160px;margin-top:15px;}
+
+button{
+  border:none;border-radius:40px;
+  padding:14px 30px;font-size:20px;
+  font-weight:700;cursor:pointer;
+}
+
+#yes{
+  background:#ff4d88;color:white;
+  animation:grow 3s infinite alternate ease-in-out;
+}
+
+@keyframes grow{
+  from{transform:scale(1)}
+  to{transform:scale(1.15)}
+}
+
+#no{
+  background:#e0e0e0;
+  position:absolute;
+  transition:transform .15s;
+}
+
+#no.shake{
+  animation:shake .25s;
+}
+@keyframes shake{
+  0%{transform:translateX(0)}
+  25%{transform:translateX(-6px)}
+  50%{transform:translateX(6px)}
+  75%{transform:translateX(-6px)}
+  100%{transform:translateX(0)}
+}
+
+#counter{margin-top:8px;color:#ff4d88;font-weight:700;}
+
+#reasons{
+  display:none;background:#fff0f6;
+  border-radius:18px;padding:14px;
+  margin-top:14px;color:#ff4d88;font-size:15px;
+}
+
+#funnyText{
+  margin-top:6px;
+  font-size:14px;
+  color:#ff7aa8;
+}
+
+/* YES SCREEN */
+#yesScreen{
+  position:fixed;inset:0;
+  background:linear-gradient(135deg,#ffe6f0,#fff0f6);
+  display:none;flex-direction:column;
+  justify-content:center;align-items:center;
+  text-align:center;z-index:9999;
+}
+
+#yesScreen h1{font-size:36px;color:#ff4d88;}
+
+#yesScreen img{
+  width:180px;margin:8px;
+  animation:pop 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes pop{
+  from{transform:scale(1)}
+  to{transform:scale(1.1) rotate(2deg)}
+}
+
+.finalMsg{
+  margin-top:10px;
+  font-weight:700;
+  color:#ff4d88;
+  font-size:16px;
+}
+
+.confetti{
+  position:fixed;top:-10px;
+  font-size:26px;
+  animation:fall 3s linear forwards;
+}
+@keyframes fall{
+  from{transform:translateY(0) rotate(0)}
+  to{transform:translateY(110vh) rotate(360deg)}
+}
+
+/* floating hearts */
+.heart{
+  position:fixed;
+  pointer-events:none;
+  animation:heartFloat 1.2s linear forwards;
+}
+@keyframes heartFloat{
+  from{transform:translateY(0) scale(1);opacity:1}
+  to{transform:translateY(-60px) scale(.5);opacity:0}
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <img id="gif" src="https://media.giphy.com/media/3oriO6qJiXajN0TyDu/giphy.gif">
+
+  <h1>Will you be my Valentine, BB? 💖🥹</h1>
+  <p>Be honest… your heart already knows 😌💘</p>
+
+  <div class="buttons">
+    <button id="yes">Yes 😍💖</button>
+    <button id="no">No 😢</button>
+  </div>
+
+  <div id="counter">No clicks: 0 😼</div>
+  <div id="funnyText"></div>
+
+  <div id="reasons">
+    <strong>Why you should click Yes 🥹💗</strong><br><br>
+    • I’ll be the happiest person ever 💖<br>
+    • Unlimited pappis 😘💋<br>
+    • Sushi 🍣 + Matcha 🍵<br><br>
+    <strong>So… YES? 😤💘</strong>
+  </div>
+</div>
+
+<div id="yesScreen">
+  <h1>YES ACCEPTED 💖🎉</h1>
+  <p>BB is officially my Valentine 😭💘<br>Best decision ever 🥰</p>
+  <img src="https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif">
+  <img src="https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif">
+  <div class="finalMsg">Okay now come here… hugs first 🤗💞</div>
+</div>
+
+<script>
+const noBtn=document.getElementById("no");
+const yesBtn=document.getElementById("yes");
+const counter=document.getElementById("counter");
+const gif=document.getElementById("gif");
+const reasons=document.getElementById("reasons");
+const funny=document.getElementById("funnyText");
+
+let noClicks=0;
+
+/* background music */
+const bgm=new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
+bgm.volume=0.05;
+bgm.loop=true;
+
+/* yes sound */
+function yesSound(){
+  const ctx=new (window.AudioContext||window.webkitAudioContext)();
+  const o=ctx.createOscillator();
+  const g=ctx.createGain();
+  o.frequency.value=880;
+  g.gain.value=0.1;
+  o.connect(g);g.connect(ctx.destination);
+  o.start();o.stop(ctx.currentTime+.15);
+}
+
+const sadGifs=[
+  "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif",
+  "https://media.giphy.com/media/xUPGcguWZHRC2HyBRS/giphy.gif",
+  "https://media.giphy.com/media/5GoVLqeAOo6PK/giphy.gif"
+];
+
+const funnyTexts=[
+  "Hey 😒 that tickled!",
+  "Nice try 😂",
+  "Nope nope nope 🏃‍♂️",
+  "You’re enjoying this too much 😏",
+  "Just say YES already 😤"
+];
+
+function moveNo(){
+  noClicks++;
+  noBtn.classList.add("shake");
+  setTimeout(()=>noBtn.classList.remove("shake"),200);
+
+  counter.innerText=`No clicks: ${noClicks} 😼`;
+  funny.innerText=funnyTexts[Math.floor(Math.random()*funnyTexts.length)];
+  gif.src=sadGifs[Math.floor(Math.random()*sadGifs.length)];
+
+  let scale=Math.max(.4,1-noClicks*.08);
+  noBtn.style.transform=
+    `scale(${scale}) translate(${Math.random()*240}px,${Math.random()*140}px)`;
+
+  if(noClicks===3) reasons.style.display="block";
+}
+
+noBtn.addEventListener("mouseover",moveNo);
+noBtn.addEventListener("click",moveNo);
+
+yesBtn.addEventListener("click",()=>{
+  bgm.play();
+  yesSound();
+  document.getElementById("yesScreen").style.display="flex";
+
+  for(let i=0;i<150;i++){
+    let c=document.createElement("div");
+    c.className="confetti";
+    c.innerHTML=["💖","🎉","✨","🥹","💘","😂","🥰"][Math.floor(Math.random()*7)];
+    c.style.left=Math.random()*100+"vw";
+    c.style.animationDuration=(2+Math.random()*2)+"s";
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),4000);
+  }
+});
+
+/* floating hearts */
+document.addEventListener("mousemove",e=>{
+  let h=document.createElement("div");
+  h.className="heart";
+  h.innerHTML="💖";
+  h.style.left=e.clientX+"px";
+  h.style.top=e.clientY+"px";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),1200);
+});
+</script>
+
+</body>
+</html>
